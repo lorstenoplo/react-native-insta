@@ -16,15 +16,20 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<any>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const signIn = async () => {
+    setLoading(true);
     try {
       const user = await auth().signInWithEmailAndPassword(email, password);
       console.log(user);
+      setLoading(false);
       return user;
     } catch (err) {
-      setError(err.message);
-      return err;
+      setLoading(false);
+      return Alert.alert("Opps!, could not Login", err.message, [
+        { text: "Understood" },
+      ]);
     }
   };
 
@@ -52,7 +57,7 @@ const Login = () => {
         />
         <Button
           focusable={false}
-          color={Colors.blue500}
+          loading={loading}
           onPress={signIn}
           mode="contained"
         >

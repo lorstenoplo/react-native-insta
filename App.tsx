@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-
 import {
-  NavigationContainer,
-  DefaultTheme as NavigationDefaultTheme,
   DefaultTheme,
-} from "@react-navigation/native";
+  Provider as PaperProvider,
+  configureFonts,
+} from "react-native-paper";
+
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import * as firebase from "firebase";
@@ -23,6 +25,10 @@ import RegisterScreen from "./components/auth/Register";
 import LoginScreen from "./components/auth/Login";
 import MainScreen from "./components/Main";
 import AddScreen from "./components/main/Add";
+import ChatScreen from "./components/shared/Chat";
+import AboutScreen from "./components/shared/About";
+import SaveScreen from "./components/main/Save";
+import EditProfileScreen from "./components/main/EditProfile";
 import { ActivityIndicator, Colors } from "react-native-paper";
 
 import * as Font from "expo-font";
@@ -30,7 +36,47 @@ import AppLoading from "expo-app-loading";
 
 const Stack = createStackNavigator();
 
-export default function App() {
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: Colors.blue800,
+    custom: Colors.white,
+  },
+  fonts: configureFonts({
+    android: {
+      ...DefaultTheme.fonts,
+      regular: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
+      },
+      medium: {
+        fontFamily: "InstaSansMed",
+        fontWeight: "700",
+      },
+    },
+    ios: {
+      regular: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
+      },
+      medium: {
+        fontFamily: "InstaSansMed",
+        fontWeight: "700",
+      },
+      light: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
+      },
+      thin: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
+      },
+    },
+  }),
+};
+
+export default function App({ navigation }: any) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
@@ -59,7 +105,7 @@ export default function App() {
   if (!loaded) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator focusable={false} color={Colors.blue50} />
+        <ActivityIndicator size={60} color={Colors.blue500} />
       </View>
     );
   }
@@ -71,15 +117,20 @@ export default function App() {
   if (!loggedIn && fontsLoaded) {
     return (
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Landing">
-          <Stack.Screen
-            name="Landing"
-            component={LandingScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="Login" component={LoginScreen} />
-        </Stack.Navigator>
+        <PaperProvider theme={theme}>
+          <Stack.Navigator
+            screenOptions={{ headerTitleStyle: { fontFamily: "InstaSans" } }}
+            initialRouteName="Landing"
+          >
+            <Stack.Screen
+              name="Landing"
+              component={LandingScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
+          </Stack.Navigator>
+        </PaperProvider>
       </NavigationContainer>
     );
   }
@@ -87,14 +138,35 @@ export default function App() {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Main">
-          <Stack.Screen
-            name="Main"
-            component={MainScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="Add" component={AddScreen} />
-        </Stack.Navigator>
+        <PaperProvider theme={theme}>
+          <Stack.Navigator
+            screenOptions={{ headerTitleStyle: { fontFamily: "InstaSans" } }}
+            initialRouteName="Main"
+          >
+            <Stack.Screen
+              name="Main"
+              component={MainScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Add"
+              navigation={navigation}
+              component={AddScreen}
+            />
+            <Stack.Screen name="Chat" component={ChatScreen} />
+            <Stack.Screen name="About" component={AboutScreen} />
+            <Stack.Screen
+              name="Save"
+              navigation={navigation}
+              component={SaveScreen}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              navigation={navigation}
+              component={EditProfileScreen}
+            />
+          </Stack.Navigator>
+        </PaperProvider>
       </NavigationContainer>
     </Provider>
   );

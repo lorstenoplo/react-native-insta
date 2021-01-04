@@ -8,11 +8,13 @@ const Register = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const signUp = async () => {
+    setLoading(true);
     try {
       const user = await auth.createUserWithEmailAndPassword(email, password);
-
+      const currUser = auth.currentUser;
       //console.log(user);
 
       await db.collection("users").doc(auth.currentUser?.uid).set({
@@ -20,8 +22,15 @@ const Register = () => {
         email,
       });
 
+      await auth.currentUser?.updateProfile({
+        displayName: name,
+      });
+
+      setLoading(false);
+
       return user;
     } catch (err) {
+      setLoading(false);
       return Alert.alert("Opps!, could not Login", err.message, [
         { text: "Understood" },
       ]);
@@ -54,11 +63,11 @@ const Register = () => {
           value={password}
         />
         <Button
-          color={Colors.blue500}
           focusable={false}
           mode="contained"
           style={styles.button}
           onPress={signUp}
+          loading={loading}
         >
           Sign Up
         </Button>
@@ -84,7 +93,6 @@ const styles = StyleSheet.create({
   button: {
     width: 300,
     marginTop: 5,
-    height: 40,
     marginHorizontal: "auto",
   },
 });
