@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   SafeAreaView,
@@ -18,12 +18,19 @@ const Login = () => {
   const [error, setError] = useState<any>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  let mounted = true;
+
+  useEffect(() => {
+    return function cleanUp() {
+      mounted = false;
+    };
+  }, []);
+
   const signIn = async () => {
     setLoading(true);
     try {
       const user = await auth().signInWithEmailAndPassword(email, password);
-      console.log(user);
-      setLoading(false);
+      if (mounted) setLoading(false);
       return user;
     } catch (err) {
       setLoading(false);

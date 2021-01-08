@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, SafeAreaView, Alert, View } from "react-native";
 import { auth } from "../../firebase";
 import db from "../../firebase";
@@ -9,6 +9,14 @@ const Register = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+  let mounted = true;
+
+  useEffect(() => {
+    return function cleanUp() {
+      mounted = false;
+    };
+  }, []);
 
   const signUp = async () => {
     setLoading(true);
@@ -25,8 +33,7 @@ const Register = () => {
       await auth.currentUser?.updateProfile({
         displayName: name,
       });
-
-      setLoading(false);
+      if (mounted) setLoading(false);
 
       return user;
     } catch (err) {

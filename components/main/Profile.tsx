@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, FlatList, Alert } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import db, { auth } from "../../firebase";
 import { Avatar, Button, ActivityIndicator, Colors } from "react-native-paper";
 import Navbar from "../shared/Navbar";
@@ -18,6 +26,7 @@ const Profile = ({
   const [loading, setLoading] = useState<boolean>(true);
   const [following, setFollowing] = useState<boolean>(false);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [bio, setBio] = useState<any>("");
 
   useEffect(() => {
     if (route.params.uid === auth.currentUser?.uid) {
@@ -25,6 +34,11 @@ const Profile = ({
       setUserPosts(posts);
       setLoading(false);
       setRefresh(!refresh);
+      db.collection("users")
+        .doc(auth.currentUser?.uid)
+        .onSnapshot((snapshot) => {
+          setBio(snapshot.data()?.bio);
+        });
     }
   }, [posts, route.params.uid]);
 
@@ -37,6 +51,7 @@ const Profile = ({
           setLoading(false);
           if (snapshot.exists) {
             setUser(snapshot.data());
+            setBio(user?.bio);
           } else {
             console.log("does not exist");
           }
@@ -79,6 +94,8 @@ const Profile = ({
         Alert.alert("Opps!, could not Login", err.message, [{ text: "Ok" }])
       );
   };
+
+  //console.log(bio);
 
   const onUnfollow = () => {
     db.collection("following")
@@ -151,14 +168,11 @@ const Profile = ({
   );
 
   const imgSrc = user?.photoURL;
-  //console.log(refresh);
+  //console.log(userPosts);
 
   return (
     <View style={styles.container}>
-      <Navbar
-        navigation={navigation}
-        title={auth.currentUser?.displayName || currentUser.name}
-      />
+      <Navbar navigation={navigation} title={user?.name || user?.displayName} />
 
       <View style={styles.topContainer}>
         {imgSrc ? (
@@ -167,13 +181,31 @@ const Profile = ({
           <FontAwesome5 name="user-circle" size={60} color="black" />
         )}
         <View style={styles.topRightCont}>
-          <Text style={styles.label}>
-            Name :{" "}
-            <Text style={styles.text}>{user?.displayName || user?.name}</Text>
-          </Text>
-          <Text style={styles.label}>
-            Email : <Text style={styles.text}>{user?.email}</Text>
-          </Text>
+          {!bio ? (
+            <>
+              <Text style={styles.label}>
+                Name :{" "}
+                <Text style={styles.text}>
+                  {user?.displayName || user?.name}
+                </Text>
+              </Text>
+              <Text style={styles.label}>
+                Email : <Text style={styles.text}>{user?.email}</Text>
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text style={styles.label}>
+                Name :{" "}
+                <Text style={styles.text}>
+                  {user?.displayName || user?.name}
+                </Text>
+              </Text>
+              <Text style={styles.label}>
+                <Text style={styles.text}>{user?.bio || bio}</Text>
+              </Text>
+            </>
+          )}
         </View>
       </View>
 
@@ -195,7 +227,16 @@ const Profile = ({
           data={userPosts}
           extraData={refresh}
           renderItem={({ item }) => (
-            <Image style={styles.image} source={{ uri: item?.downloadURL }} />
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("Post", {
+                  postInfo: item,
+                  user: user,
+                })
+              }
+            >
+              <Image style={styles.image} source={{ uri: item?.downloadURL }} />
+            </TouchableOpacity>
           )}
         />
       </View>
@@ -242,7 +283,7 @@ const styles = StyleSheet.create({
   },
   galleryCont: {
     flex: 1,
-    paddingHorizontal: 5,
+    paddingHorizontal: 15,
   },
   image: {
     flex: 1 / 3,

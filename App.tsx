@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import {
   DefaultTheme,
   Provider as PaperProvider,
@@ -29,10 +29,14 @@ import ChatScreen from "./components/shared/Chat";
 import AboutScreen from "./components/shared/About";
 import SaveScreen from "./components/main/Save";
 import EditProfileScreen from "./components/main/EditProfile";
+import CommentsScreen from "./components/main/Comments";
+import PostScreen from "./components/shared/Post";
 import { ActivityIndicator, Colors } from "react-native-paper";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 
 import * as Font from "expo-font";
 import AppLoading from "expo-app-loading";
+import { Camera } from "expo-camera";
 
 const Stack = createStackNavigator();
 
@@ -45,7 +49,6 @@ const theme = {
   },
   fonts: configureFonts({
     android: {
-      ...DefaultTheme.fonts,
       regular: {
         fontFamily: "InstaSans",
         fontWeight: "normal",
@@ -53,6 +56,14 @@ const theme = {
       medium: {
         fontFamily: "InstaSansMed",
         fontWeight: "700",
+      },
+      light: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
+      },
+      thin: {
+        fontFamily: "InstaSans",
+        fontWeight: "normal",
       },
     },
     ios: {
@@ -80,6 +91,7 @@ export default function App({ navigation }: any) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
+  const [flashMode, setFlashMode] = useState<any>(null);
 
   const getFonts = () => {
     Font.loadAsync({
@@ -88,6 +100,8 @@ export default function App({ navigation }: any) {
     });
     setFontsLoaded(true);
   };
+
+  const { FlashMode: CameraFlashModes, Type: CameraTypes } = Camera.Constants;
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -100,6 +114,7 @@ export default function App({ navigation }: any) {
       }
     });
     getFonts();
+    setFlashMode(Camera.Constants.FlashMode.off);
   }, []);
 
   if (!loaded) {
@@ -151,7 +166,36 @@ export default function App({ navigation }: any) {
             <Stack.Screen
               name="Add"
               navigation={navigation}
+              flashMode={flashMode}
               component={AddScreen}
+              options={{
+                headerRight: () => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      setFlashMode(
+                        flashMode === CameraFlashModes.on
+                          ? CameraFlashModes.off
+                          : CameraFlashModes.on
+                      )
+                    }
+                  >
+                    <Ionicons
+                      name={
+                        flashMode == CameraFlashModes.on
+                          ? "md-flash"
+                          : "md-flash-off"
+                      }
+                      size={24}
+                      color="white"
+                    />
+                  </TouchableOpacity>
+                ),
+                headerTransparent: true,
+                headerTitleStyle: {
+                  color: "white",
+                },
+                headerBackTitleVisible: false,
+              }}
             />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="About" component={AboutScreen} />
@@ -164,6 +208,16 @@ export default function App({ navigation }: any) {
               name="EditProfile"
               navigation={navigation}
               component={EditProfileScreen}
+            />
+            <Stack.Screen
+              name="Comments"
+              navigation={navigation}
+              component={CommentsScreen}
+            />
+            <Stack.Screen
+              name="Post"
+              navigation={navigation}
+              component={PostScreen}
             />
           </Stack.Navigator>
         </PaperProvider>

@@ -10,7 +10,7 @@ import {
 import { ActivityIndicator, Colors, Avatar, Button } from "react-native-paper";
 import { connect } from "react-redux";
 import Navbar from "../shared/Navbar";
-import { FontAwesome5, AntDesign, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5, AntDesign } from "@expo/vector-icons";
 import * as timeago from "timeago.js";
 
 const Feed = ({ navigation, usersLoaded, users, reduxFollowing }: any) => {
@@ -23,7 +23,6 @@ const Feed = ({ navigation, usersLoaded, users, reduxFollowing }: any) => {
     if (usersLoaded === reduxFollowing?.length) {
       for (let i = 0; i < reduxFollowing?.length; i++) {
         const user = users.find((el: any) => el.uid === reduxFollowing[i]);
-        console.log(user);
         if (user !== undefined) {
           posts = [...posts, ...user.posts];
         }
@@ -106,11 +105,20 @@ const Feed = ({ navigation, usersLoaded, users, reduxFollowing }: any) => {
                     size={24}
                     color="black"
                   />
-                  <FontAwesome5
-                    name="comment"
-                    size={24}
-                    color="rgba(0,0,0,0.8)"
-                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("Comments", {
+                        postId: item.id,
+                        uid: item.user.uid,
+                      })
+                    }
+                  >
+                    <FontAwesome5
+                      name="comment"
+                      size={24}
+                      color="rgba(0,0,0,0.8)"
+                    />
+                  </TouchableOpacity>
                 </View>
                 <Text
                   style={{
@@ -124,33 +132,37 @@ const Feed = ({ navigation, usersLoaded, users, reduxFollowing }: any) => {
                   )}
                 </Text>
               </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  padding: 10,
-                }}
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Post", { postInfo: item })}
               >
-                <Text
+                <View
                   style={{
-                    fontFamily: "InstaSansMed",
-                    fontSize: 17,
-                    marginTop: 10,
+                    flexDirection: "row",
+                    padding: 10,
                   }}
                 >
-                  {item.user.name}
-                  {"   "}
-                </Text>
-                <Text
-                  style={{
-                    fontFamily: "InstaSans",
-                    fontSize: 17,
-                    marginTop: 10,
-                    flex: 1,
-                  }}
-                >
-                  {item.caption}
-                </Text>
-              </View>
+                  <Text
+                    style={{
+                      fontFamily: "InstaSansMed",
+                      fontSize: 17,
+                      marginTop: 10,
+                    }}
+                  >
+                    {item.user.name}
+                    {"  "}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "InstaSans",
+                      fontSize: 17,
+                      marginTop: 10,
+                      flex: 1,
+                    }}
+                  >
+                    {item.caption}
+                  </Text>
+                </View>
+              </TouchableOpacity>
             </View>
           )}
         />
@@ -178,9 +190,9 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 5,
   },
   image: {
-    minHeight: 300,
     flex: 1,
-    aspectRatio: 1 / 1,
+    aspectRatio: 16 / 9,
+    maxWidth: "100%",
   },
   loading: {
     flex: 1,
@@ -189,11 +201,12 @@ const styles = StyleSheet.create({
   },
   post: {
     flex: 1,
-    marginVertical: 10,
+    marginVertical: 15,
     maxWidth: 500,
     backgroundColor: "white",
     borderColor: "rgba(0,0,0,0.1)",
-    borderWidth: 0.5,
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
   },
   postUserInfo: {
     flexDirection: "row",

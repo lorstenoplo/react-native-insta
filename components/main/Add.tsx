@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   Image,
   ScrollView,
+  ImageBackground,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { Camera } from "expo-camera";
 import {
@@ -18,12 +20,13 @@ import {
 import { TouchableRipple } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 
-export default function Add({ navigation }: any) {
+export default function Add({ navigation, flashMode }: any) {
   const [hasCameraPermission, setHasCameraPermission] = useState<any>(null);
   const [hasGalleryPermission, setHasGalleryPermission] = useState<any>(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
   const [camera, setCamera] = useState<any>(null);
   const [image, setImage] = useState<any>(null);
+  const [capturing, setCapturing] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -51,6 +54,7 @@ export default function Add({ navigation }: any) {
         quality: 0.6,
       });
       setImage(data.uri);
+      setCapturing(false);
       //if (image !== null) navigation.navigate("Save", { image });
     }
   };
@@ -71,8 +75,7 @@ export default function Add({ navigation }: any) {
 
   if (image) {
     return (
-      <View style={styles.container2}>
-        <Image source={{ uri: image }} style={styles.img} />
+      <ImageBackground source={{ uri: image }} style={styles.container2}>
         <View style={styles.imgOptions}>
           <TouchableOpacity onPress={() => setImage(null)}>
             <MaterialIcons name="cancel" size={65} color="red" />
@@ -83,7 +86,7 @@ export default function Add({ navigation }: any) {
             <AntDesign name="checkcircleo" size={60} color="green" />
           </TouchableOpacity>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 
@@ -94,6 +97,7 @@ export default function Add({ navigation }: any) {
         ratio="15:9"
         style={styles.camera}
         type={type}
+        flashMode={flashMode}
       >
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -108,9 +112,16 @@ export default function Add({ navigation }: any) {
           >
             <Ionicons name="camera-reverse-outline" size={35} color="white" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.centerBtn} onPress={takePicture}>
-            <FontAwesome name="circle-thin" size={85} color="white" />
-          </TouchableOpacity>
+          <TouchableWithoutFeedback
+            onPress={takePicture}
+            onPressIn={() => setCapturing(false)}
+          >
+            <View
+              style={[styles.captureBtn, capturing && styles.captureBtnActive]}
+            >
+              {capturing && <View style={styles.captureBtnInternal} />}
+            </View>
+          </TouchableWithoutFeedback>
           <TouchableOpacity style={styles.rightBtn} onPress={pickImage}>
             <FontAwesome name="photo" size={32} color="white" />
           </TouchableOpacity>
@@ -128,7 +139,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonContainer: {
-    flex: 1,
+    alignSelf: "flex-end",
     backgroundColor: "transparent",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -137,20 +148,14 @@ const styles = StyleSheet.create({
     height: 50,
   },
   leftButton: {
-    alignSelf: "flex-end",
     alignItems: "center",
     marginBottom: 20,
   },
-  centerBtn: {
-    alignSelf: "flex-end",
-  },
   rightBtn: {
-    alignSelf: "flex-end",
     marginBottom: 20,
   },
   container2: {
     flex: 1,
-    padding: 10,
   },
   img: {
     maxWidth: 340,
@@ -159,9 +164,32 @@ const styles = StyleSheet.create({
   },
   imgOptions: {
     flexDirection: "row",
-    flex: 1,
-    marginVertical: 30,
+    marginVertical: 5,
     alignItems: "center",
-    justifyContent: "space-evenly",
+    alignSelf: "flex-end",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    height: 100,
+    width: 170,
+  },
+  captureBtn: {
+    width: 60,
+    height: 60,
+    borderWidth: 2,
+    borderRadius: 60,
+    borderColor: "#FFFFFF",
+  },
+  captureBtnActive: {
+    width: 80,
+    height: 80,
+  },
+  captureBtnInternal: {
+    width: 74,
+    height: 74,
+    borderWidth: 2,
+    borderRadius: 76,
+    backgroundColor: "red",
+    borderColor: "transparent",
   },
 });

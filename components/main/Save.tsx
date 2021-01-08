@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
     fontFamily: "InstaSans",
     fontSize: 20,
     flex: 1,
+    marginRight: 2,
   },
   inputCont: {
     flexDirection: "row",
