@@ -21,11 +21,12 @@ const Comments = ({ route }: any) => {
   //console.log(comments);
 
   const { uid } = route.params;
+
   const dbRef = db
     .collection("posts")
     .doc(uid)
     .collection("userPosts")
-    .doc(route.params.postId)
+    .doc(route.params?.postId)
     .collection("comments");
 
   useEffect(() => {
@@ -146,6 +147,7 @@ const styles = StyleSheet.create({
   bottomCont: {
     flexDirection: "row",
     padding: 10,
+    paddingVertical: 15,
     alignItems: "center",
     backgroundColor: "white",
     borderColor: "lightgray",

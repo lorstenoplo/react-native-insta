@@ -63,9 +63,9 @@ const Profile = ({
         .orderBy("creation", "desc")
         .onSnapshot((snapshot) => {
           let posts = snapshot.docs.map((doc) => {
-            const data = doc.data();
             const id = doc.id;
-            return { ...data, id };
+            const data = doc.data();
+            return { id, ...data };
           });
           setUserPosts(posts);
           setRefresh(!refresh);

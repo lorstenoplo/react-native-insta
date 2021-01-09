@@ -6,10 +6,12 @@ import { Avatar } from "react-native-paper";
 
 const Post = ({ route, navigation }: any) => {
   const [postInfo, setPostInfo] = useState<any>();
-  const [photoSrc, setPhotoSrc] = useState<any>();
+
   useEffect(() => {
     if (postInfo !== route.params.postInfo) setPostInfo(route.params.postInfo);
   }, [route.params.postInfo]);
+
+  console.log(postInfo);
 
   if (route.params.user) {
     return (

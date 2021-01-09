@@ -91,7 +91,6 @@ export default function App({ navigation }: any) {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [fontsLoaded, setFontsLoaded] = useState<boolean>(false);
-  const [flashMode, setFlashMode] = useState<any>(null);
 
   const getFonts = () => {
     Font.loadAsync({
@@ -100,8 +99,6 @@ export default function App({ navigation }: any) {
     });
     setFontsLoaded(true);
   };
-
-  const { FlashMode: CameraFlashModes, Type: CameraTypes } = Camera.Constants;
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -114,7 +111,6 @@ export default function App({ navigation }: any) {
       }
     });
     getFonts();
-    setFlashMode(Camera.Constants.FlashMode.off);
   }, []);
 
   if (!loaded) {
@@ -166,36 +162,8 @@ export default function App({ navigation }: any) {
             <Stack.Screen
               name="Add"
               navigation={navigation}
-              flashMode={flashMode}
               component={AddScreen}
-              options={{
-                headerRight: () => (
-                  <TouchableOpacity
-                    onPress={() =>
-                      setFlashMode(
-                        flashMode === CameraFlashModes.on
-                          ? CameraFlashModes.off
-                          : CameraFlashModes.on
-                      )
-                    }
-                  >
-                    <Ionicons
-                      name={
-                        flashMode == CameraFlashModes.on
-                          ? "md-flash"
-                          : "md-flash-off"
-                      }
-                      size={24}
-                      color="white"
-                    />
-                  </TouchableOpacity>
-                ),
-                headerTransparent: true,
-                headerTitleStyle: {
-                  color: "white",
-                },
-                headerBackTitleVisible: false,
-              }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen name="Chat" component={ChatScreen} />
             <Stack.Screen name="About" component={AboutScreen} />
