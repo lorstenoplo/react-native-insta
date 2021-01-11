@@ -232,6 +232,7 @@ const Profile = ({
                 navigation.navigate("Post", {
                   postInfo: item,
                   user: user,
+                  uid: route.params.uid,
                 })
               }
             >

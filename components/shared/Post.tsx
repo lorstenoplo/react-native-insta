@@ -11,14 +11,12 @@ const Post = ({ route, navigation }: any) => {
     if (postInfo !== route.params.postInfo) setPostInfo(route.params.postInfo);
   }, [route.params.postInfo]);
 
-  console.log(postInfo);
-
   if (route.params.user) {
     return (
       <View style={styles.post}>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("Profile", { uid: postInfo?.user.uid })
+            navigation.navigate("Profile", { uid: route.params?.uid })
           }
         >
           <View style={styles.postUserInfo}>
@@ -64,7 +62,7 @@ const Post = ({ route, navigation }: any) => {
               onPress={() =>
                 navigation.navigate("Comments", {
                   postId: postInfo?.id,
-                  uid: route.params.user.uid,
+                  uid: route.params.uid,
                 })
               }
             >
@@ -113,8 +111,6 @@ const Post = ({ route, navigation }: any) => {
       </View>
     );
   }
-
-  console.log(postInfo);
 
   return (
     <View style={styles.post}>

@@ -2,10 +2,10 @@ import React from "react";
 import { View } from "react-native";
 import Navbar from "../shared/Navbar";
 
-const Following = () => {
+const Following = ({ navigation }: any) => {
   return (
     <View>
-      <Navbar title="Following" />
+      <Navbar navigation={navigation} title="Following" />
     </View>
   );
 };

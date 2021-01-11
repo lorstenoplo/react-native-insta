@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -18,6 +18,14 @@ const Save = ({ route, navigation }: any) => {
   const [caption, setCaption] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  let mounted = true;
+
+  useEffect(() => {
+    return function cleanup() {
+      mounted = false;
+    };
+  });
+
   const savePostData = (downloadURL: any) => {
     db.collection("posts")
       .doc(auth.currentUser?.uid)
@@ -28,7 +36,9 @@ const Save = ({ route, navigation }: any) => {
         creation: firebase.firestore.FieldValue.serverTimestamp(),
       })
       .then(() => navigation.popToTop())
-      .then(() => setLoading(false))
+      .then(() => {
+        if (mounted) setLoading(false);
+      })
       .catch((err) =>
         Alert.alert("Opps!, could not Login", err.message, [{ text: "Ok" }])
       );

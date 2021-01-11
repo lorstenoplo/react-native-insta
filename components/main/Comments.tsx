@@ -7,6 +7,7 @@ import {
   TextInput,
   Button,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import db, { auth } from "../../firebase";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
@@ -14,11 +15,10 @@ import { Avatar } from "react-native-paper";
 import firebase from "firebase";
 import * as timeago from "timeago.js";
 
-const Comments = ({ route }: any) => {
+const Comments = ({ route, navigation }: any) => {
   const [comments, setComments] = useState<any>([]);
   const [postId, setPostId] = useState<string>("");
   const [text, setText] = useState<string>("");
-  //console.log(comments);
 
   const { uid } = route.params;
 
@@ -31,14 +31,21 @@ const Comments = ({ route }: any) => {
 
   useEffect(() => {
     if (route.params.postId !== postId) {
-      dbRef.orderBy("creation", "desc").onSnapshot((snapshot) => {
-        let comments = snapshot.docs.map((comment) => {
-          const id = comment.id;
-          const data = comment.data();
-          return { id, ...data };
-        });
-        setComments(comments);
-      });
+      dbRef.orderBy("creation", "desc").onSnapshot(
+        (snapshot) => {
+          let comments = snapshot.docs.map((comment) => {
+            const id = comment.id;
+            const data = comment.data();
+            return { id, ...data };
+          });
+          setComments(comments);
+        },
+        (err) => {
+          return Alert.alert("Opps!", err.message, [
+            { text: "Ok", onPress: () => navigation.popToTop() },
+          ]);
+        }
+      );
       setPostId(route.params.postId);
     }
   }, [route.params.postId]);
@@ -54,9 +61,7 @@ const Comments = ({ route }: any) => {
         })
         .then(() => setText(""))
         .catch((err) =>
-          Alert.alert("Opps!, could not Login", err.message, [
-            { text: "Understood" },
-          ])
+          Alert.alert("Opps!", err.message, [{ text: "Understood" }])
         );
     }
   };
@@ -129,12 +134,9 @@ const Comments = ({ route }: any) => {
           style={styles.container}
           value={text}
         />
-        <Ionicons
-          onPress={addComment}
-          name="ios-send-sharp"
-          size={24}
-          color="black"
-        />
+        <TouchableOpacity onPress={addComment}>
+          <Ionicons name="ios-send-sharp" size={24} color="black" />
+        </TouchableOpacity>
       </View>
     </View>
   );

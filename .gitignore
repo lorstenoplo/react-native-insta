@@ -8,9 +8,11 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+.expo-shared/*
 
 #configs
 firebase.ts
+.env
 
 # macOS
 .DS_Store

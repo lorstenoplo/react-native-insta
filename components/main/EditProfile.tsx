@@ -87,7 +87,6 @@ const EditProfile = ({ route, navigation }: any) => {
         db.collection("users").doc(user.uid).update({
           photoURL: snapshot,
         });
-        //console.log(snapshot);
       });
     };
 
@@ -117,7 +116,7 @@ const EditProfile = ({ route, navigation }: any) => {
         navigation.navigate("Profile");
       });
   };
-  //console.log(user);
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>

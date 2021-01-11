@@ -13,17 +13,16 @@ const Register = () => {
   let mounted = true;
 
   useEffect(() => {
-    return function cleanUp() {
+    return function cleanup() {
       mounted = false;
     };
-  }, []);
+  });
 
   const signUp = async () => {
     setLoading(true);
     try {
       const user = await auth.createUserWithEmailAndPassword(email, password);
       const currUser = auth.currentUser;
-      //console.log(user);
 
       await db.collection("users").doc(auth.currentUser?.uid).set({
         name,

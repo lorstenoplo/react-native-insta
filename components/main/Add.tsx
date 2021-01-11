@@ -122,7 +122,10 @@ export default function Add({ navigation }: any) {
 
   if (image) {
     return (
-      <ImageBackground source={{ uri: image }} style={styles.container2}>
+      <ImageBackground
+        source={{ uri: image }}
+        style={[styles.container2, { justifyContent: "flex-end" }]}
+      >
         <View style={styles.imgOptions}>
           <TouchableOpacity onPress={() => setImage(null)}>
             <MaterialIcons name="cancel" size={65} color="red" />
@@ -267,14 +270,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   captureBtnActive: {
-    width: 80,
-    height: 80,
+    width: 77,
+    height: 77,
   },
   captureBtnInternal: {
-    width: 76,
-    height: 76,
-    borderWidth: 4,
-    borderRadius: 76,
+    width: 73,
+    height: 73,
+    borderWidth: 3,
+    borderRadius: 73,
     backgroundColor: "red",
     borderColor: "transparent",
   },

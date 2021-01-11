@@ -21,10 +21,10 @@ const Login = () => {
   let mounted = true;
 
   useEffect(() => {
-    return function cleanUp() {
+    return function cleanup() {
       mounted = false;
     };
-  }, []);
+  });
 
   const signIn = async () => {
     setLoading(true);
